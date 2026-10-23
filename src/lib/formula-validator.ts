@@ -439,12 +439,12 @@ export function validateFormulaSafetyAndSyntax(
   if (!issues.some(i => i.severity === 'error')) {
     try {
       // Mock arguments representing all available pay variables with positive test numbers
-      const mockArgNames = [
+      const mockArgNames = Array.from(new Set([
         'Total_CTC',
         'CTC',
         'TotalCTC',
         ...allItems.map(i => i.jsVariableName)
-      ];
+      ]));
       const mockArgValues = mockArgNames.map(() => 50000);
 
       // Create a test function to verify browser JavaScript parser accepts it

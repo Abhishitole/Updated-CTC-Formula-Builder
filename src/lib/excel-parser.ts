@@ -6,7 +6,15 @@ export interface ExcelCellData {
   formula?: string;
 }
 
-export async function parseExcelFile(file: File, targetSheetName?: string): Promise<{ data: string; preview: any[], sheetNames: string[], activeSheet: string }> {
+export interface ParsedExcelResult {
+  data: string;
+  preview: any[];
+  sheetNames: string[];
+  activeSheet: string;
+  worksheet?: any;
+}
+
+export async function parseExcelFile(file: File, targetSheetName?: string): Promise<ParsedExcelResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -57,13 +65,14 @@ export async function parseExcelFile(file: File, targetSheetName?: string): Prom
           }
         }
         
-        // Limit to first 500 non-empty cells to keep it fast and within token limits
-        const limitedCells = cells.slice(0, 500);
+        // Keep cells
+        const limitedCells = cells.slice(0, 1000);
         resolve({ 
           data: limitedCells.join('\n'),
           preview: preview,
           sheetNames: sheetNames,
-          activeSheet: activeSheet
+          activeSheet: activeSheet,
+          worksheet: worksheet
         });
       } catch (error) {
         reject(error);

@@ -190,18 +190,18 @@ export default function App() {
     setEditingIndex(null);
 
     try {
-      const { data } = await parseExcelFile(file, activeSheetName);
+      const { data, worksheet } = await parseExcelFile(file, activeSheetName);
       console.log("[Analysis] Excel parsed successfully, data length:", data.length);
       
       if (!data || data.length < 10) {
         throw new Error("The Excel file seems to be empty or contains no readable data. Please ensure the sheet has content.");
       }
       
-      const formulas = await analyzeCTCFormulas(data);
+      const formulas = await analyzeCTCFormulas({ data, worksheet });
       console.log("[Analysis] Formula extraction complete. Found components:", formulas.length);
       
       if (!formulas || formulas.length === 0) {
-        throw new Error("AI was unable to identify any pay head formulas in this sheet. Please check the sheet structure.");
+        throw new Error("Unable to identify any pay head formulas in this sheet. Please check the sheet structure.");
       }
       
       setResults(formulas);
@@ -520,9 +520,9 @@ export default function App() {
                     </div>
                   </div>
                   <div className="space-y-3 px-6">
-                    <h3 className="text-2xl font-bold text-text-main tracking-tight">AI is Decoding Formulas</h3>
+                    <h3 className="text-2xl font-bold text-text-main tracking-tight">Decoding Excel Formulas Locally</h3>
                     <p className="text-text-muted max-w-sm mx-auto leading-relaxed">
-                      Reverse-engineering the payroll logic from your Excel data. This typically takes a few moments.
+                      Reverse-engineering the payroll logic from your Excel sheet directly in your browser. 100% offline, instant, with zero external APIs.
                     </p>
                   </div>
                 </motion.div>
