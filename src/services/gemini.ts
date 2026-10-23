@@ -1,19 +1,26 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const getApiKey = () => {
-  // Check for Vite environment variable (used in Netlify/production)
-  if (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_GEMINI_API_KEY) {
-    return (import.meta as any).env.VITE_GEMINI_API_KEY;
+export const getApiKey = (): string => {
+  // Check for Vite environment variables (used in Netlify/production)
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    if ((import.meta as any).env.VITE_GEMINI_API_KEY) {
+      return (import.meta as any).env.VITE_GEMINI_API_KEY;
+    }
+    if ((import.meta as any).env.GEMINI_API_KEY) {
+      return (import.meta as any).env.GEMINI_API_KEY;
+    }
   }
-  // Check for Node environment variable (used in AI Studio)
-  if (typeof process !== 'undefined' && process.env && process.env.GEMINI_API_KEY) {
-    return process.env.GEMINI_API_KEY;
+  // Check for Node/defined process.env variable
+  if (typeof process !== 'undefined' && process.env) {
+    if (process.env.VITE_GEMINI_API_KEY) {
+      return process.env.VITE_GEMINI_API_KEY;
+    }
+    if (process.env.GEMINI_API_KEY) {
+      return process.env.GEMINI_API_KEY;
+    }
   }
   return "";
 };
-
-const apiKey = getApiKey();
-const ai = new GoogleGenAI({ apiKey });
 
 export interface PayHeadFormula {
   sequenceNumber: number;
@@ -77,9 +84,14 @@ export function normalizeFormulaSyntax(formula: string): string {
 }
 
 export async function analyzeCTCFormulas(sheetData: string): Promise<PayHeadFormula[]> {
+  const apiKey = getApiKey();
   if (!apiKey) {
-    throw new Error("Gemini API key is missing. Please configure VITE_GEMINI_API_KEY in your Netlify Environment Variables.");
+    throw new Error(
+      "Gemini API key is missing. Please configure VITE_GEMINI_API_KEY in your Netlify Environment Variables (Site Configuration > Environment Variables), then re-trigger a deployment."
+    );
   }
+
+  const ai = new GoogleGenAI({ apiKey });
 
   if (!sheetData || sheetData.trim().length === 0) {
     throw new Error("The Excel sheet appears to be empty or could not be read properly.");
