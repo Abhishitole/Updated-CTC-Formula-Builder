@@ -1,0 +1,5 @@
+{
+  "name": "Remix: CTC Formula Analyzer",
+  "description": "Analyze Excel CTC sheets to extract human-readable pay head formulas.",
+  "requestFramePermissions": []
+}
